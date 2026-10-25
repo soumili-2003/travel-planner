@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incredible India - AI Travel Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#f97316', /* Warm Orange - akin to saffron */
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f97316; 
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+        }
+        /* Beautiful Indian architectural/landscape background */
+        .hero-bg {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=2071&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 bg-orange-50/30 antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="absolute w-full z-10 top-0 py-6 px-6 lg:px-12 flex justify-between items-center">
+        <div class="text-white font-serif text-2xl font-bold flex items-center gap-2 tracking-wide">
+            <svg class="w-8 h-8 text-brand-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Yatra AI
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-bg relative pt-32 pb-28 lg:pt-48 lg:pb-40 px-6 lg:px-12 flex flex-col items-center justify-center text-center shadow-xl">
+        <div class="inline-block px-4 py-1.5 rounded-full border border-brand-400/30 bg-brand-500/20 text-brand-100 text-sm font-semibold mb-6 backdrop-blur-sm">
+            Experience Incredible India
+        </div>
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 drop-shadow-xl">
+            Plan Your Next <span class="text-brand-400">Indian</span> Adventure
+        </h1>
+        <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl drop-shadow-md font-light">
+            Discover the magic of India. Enter a destination and let AI map out your travel, stay, and local experiences.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="w-full max-w-3xl relative z-20">
+            <form id="searchForm" class="flex flex-col sm:flex-row gap-3 p-2 glass-panel rounded-2xl shadow-2xl transition-all duration-300 focus-within:ring-4 focus-within:ring-brand-500/30">
+                <div class="relative flex-grow flex items-center">
+                    <svg class="w-6 h-6 text-brand-600 absolute left-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="destinationInput" placeholder="e.g., Jaipur, Varanasi, Goa, Munnar" required
+                        class="w-full pl-12 pr-4 py-4 bg-transparent text-lg text-gray-800 placeholder-gray-500 focus:outline-none border-none rounded-xl font-medium">
+                </div>
+                <button type="submit" id="searchButton" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-brand-500/30 whitespace-nowrap transform hover:-translate-y-0.5">
+                    <span>Explore</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </button>
+            </form>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-12 relative z-20 -mt-12">
+        
+        <!-- Error Message Container -->
+        <div id="errorMessage" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8 rounded-lg shadow-md flex items-center gap-3" role="alert">
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <div>
+                <p class="font-bold">Oops, something went wrong.</p>
+                <p id="errorText" class="text-sm">Please try searching again.</p>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden flex-col items-center justify-center py-24 bg-white rounded-3xl shadow-xl border border-gray-100">
+            <div class="relative w-24 h-24 mb-6">
+                <div class="absolute inset-0 border-4 border-brand-100 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-brand-500 rounded-full border-t-transparent animate-spin"></div>
+                <svg class="absolute inset-0 m-auto w-10 h-10 text-brand-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-2xl font-serif font-bold text-gray-800 mb-2">Curating Your Itinerary...</h3>
+            <p class="text-gray-500 text-center max-w-md">Finding the best Rajdhani routes, stunning heritage hotels, and iconic local spots.</p>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" class="hidden fade-in space-y-12">
+            
+            <!-- Destination Header -->
+            <div class="bg-white rounded-3xl p-8 md:p-12 shadow-xl text-center border-t-4 border-brand-500">
+                <h2 id="resDestination" class="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-4">Destination</h2>
+                <p id="resSummary" class="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">Destination summary will appear here.</p>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="space-y-12">
+                
+                <!-- Section: Getting There (Trains & Flights) -->
+                <section>
+                    <div class="flex items-center gap-4 mb-6 border-b border-gray-200 pb-4">
+                        <div class="bg-blue-100 p-3 rounded-2xl text-blue-600 shadow-sm">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </div>
+                        <h3 class="text-3xl font-serif font-bold text-gray-800">How to Reach</h3>
+                    </div>
+                    <div id="travelOptionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- JS injected -->
+                    </div>
+                </section>
+
+                <!-- Section: Where to Stay -->
+                <section>
+                    <div class="flex items-center gap-4 mb-6 border-b border-gray-200 pb-4">
+                        <div class="bg-purple-100 p-3 rounded-2xl text-purple-600 shadow-sm">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                        <h3 class="text-3xl font-serif font-bold text-gray-800">Where to Stay</h3>
+                    </div>
+                    <div id="hotelsGrid" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- JS injected -->
+                    </div>
+                </section>
+
+                <!-- Section: Top Attractions -->
+                <section>
+                    <div class="flex items-center gap-4 mb-6 border-b border-gray-200 pb-4">
+                        <div class="bg-brand-100 p-3 rounded-2xl text-brand-600 shadow-sm">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        </div>
+                        <h3 class="text-3xl font-serif font-bold text-gray-800">Must-Visit Spots</h3>
+                    </div>
+                    <div id="attractionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- JS injected -->
+                    </div>
+                </section>
+
+                <!-- Section: Local Transport -->
+                <section>
+                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-10 text-white shadow-2xl relative overflow-hidden">
+                        <!-- Decorative bg graphic -->
+                        <svg class="absolute top-0 right-0 text-gray-700 opacity-30 w-72 h-72 -mt-10 -mr-10 transform rotate-12" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"></path></svg>
+                        
+                        <div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+                            <div class="bg-brand-500 p-4 rounded-2xl text-white shadow-lg flex-shrink-0">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-3xl font-serif font-bold mb-4 text-brand-50">Getting Around Locally</h3>
+                                <p id="resLocalTransport" class="text-gray-300 text-lg leading-relaxed">
+                                    Local transport guide will appear here.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-8 text-center mt-auto">
+        <p class="text-gray-500 font-medium text-sm flex items-center justify-center gap-1">
+            Made for <span class="font-serif italic text-brand-600 text-base mx-1">Incredible India</span> with AI
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('searchForm');
+            const input = document.getElementById('destinationInput');
+            const searchButton = document.getElementById('searchButton');
+            
+            const loadingState = document.getElementById('loadingState');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+
+            // Strict JSON schema for Gemini to ensure reliable parsing
+            const responseSchema = {
+                type: "OBJECT",
+                properties: {
+                    destinationName: { type: "STRING", description: "The formalized name of the Indian destination (e.g., 'Udaipur, Rajasthan')." },
+                    summary: { type: "STRING", description: "A highly inspiring 2-3 sentence summary of the destination's cultural or natural vibe." },
+                    travelOptions: {
+                        type: "ARRAY",
+                        description: "List of major ways to reach (Flights, Premium Trains like Vande Bharat/Rajdhani).",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                mode: { type: "STRING", description: "e.g., 'Flight to [Airport]', 'Train (Vande Bharat)'" },
+                                details: { type: "STRING", description: "Helpful advice on using this mode from major Indian hubs like Delhi/Mumbai, including duration or terminal info." }
+                            },
+                            required: ["mode", "details"]
+                        }
+                    },
+                    hotels: {
+                        type: "ARRAY",
+                        description: "3 recommended hotel options/areas categorized by budget.",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                name: { type: "STRING", description: "Name of the hotel or specific neighborhood." },
+                                budget: { type: "STRING", description: "Must be exactly one of: 'Luxury', 'Mid-Range', or 'Budget'" },
+                                description: { type: "STRING", description: "Why stay here? Mention heritage aspects if applicable." }
+                            },
+                            required: ["name", "budget", "description"]
+                        }
+                    },
+                    attractions: {
+                        type: "ARRAY",
+                        description: "List of 4 top must-see tourist spots.",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                name: { type: "STRING", description: "Name of the attraction." },
+                                description: { type: "STRING", description: "What makes it special and tip on when to visit." }
+                            },
+                            required: ["name", "description"]
+                        }
+                    },
+                    localTransport: {
+                        type: "STRING",
+                        description: "A comprehensive paragraph on how to navigate the destination locally. Explicitly mention local nuances like Auto-rickshaws, Metro availability, Ola/Uber, or walking."
+                    }
+                },
+                required: ["destinationName", "summary", "travelOptions", "hotels", "attractions", "localTransport"]
+            };
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const destination = input.value.trim();
+                if (!destination) return;
+
+                // UI Reset
+                errorMessage.classList.add('hidden');
+                resultsContainer.classList.add('hidden');
+                resultsContainer.classList.remove('fade-in');
+                
+                loadingState.classList.remove('hidden');
+                loadingState.classList.add('flex');
+                
+                // Button state
+                searchButton.disabled = true;
+                const originalBtnText = searchButton.innerHTML;
+                searchButton.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Planning...</span>`;
+
+                // Scroll to loading
+                window.scrollTo({ top: loadingState.offsetTop - 100, behavior: 'smooth' });
+
+                try {
+                    const planData = await fetchTravelPlan(destination);
+                    if(planData) {
+                        renderPlan(planData);
+                        loadingState.classList.remove('flex');
+                        loadingState.classList.add('hidden');
+                        
+                        // Force reflow and apply animation class
+                        void resultsContainer.offsetWidth; 
+                        resultsContainer.classList.remove('hidden');
+                        resultsContainer.classList.add('fade-in');
+                    } else {
+                        throw new Error("Empty or invalid response from API.");
+                    }
+                } catch (error) {
+                    console.error("Plan Error:", error);
+                    loadingState.classList.remove('flex');
+                    loadingState.classList.add('hidden');
+                    errorMessage.classList.remove('hidden');
+                    errorMessage.classList.add('flex');
+                } finally {
+                    searchButton.disabled = false;
+                    searchButton.innerHTML = originalBtnText;
+                }
+            });
+
+            async function fetchTravelPlan(destination) {
+                const apiKey = ""; // API key is handled automatically by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                
+                const prompt = `Act as an expert Indian travel planner. Plan a trip to "${destination}", India. Provide detailed travel options (emphasize major flight routes and premium trains like Vande Bharat/Rajdhani from major cities), 3 hotel recommendations (Luxury, Mid-Range, Budget), 4 top attractions, and practical local transport advice (auto-rickshaws, metros, Ola/Uber). Follow the required JSON schema strictly.`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: responseSchema
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content?.parts?.[0]?.text) {
+                    return JSON.parse(result.candidates[0].content.parts[0].text);
+                }
+                return null;
+            }
+
+            function renderPlan(data) {
+                document.getElementById('resDestination').textContent = data.destinationName;
+                document.getElementById('resSummary').textContent = data.summary;
+
+                // Travel Options Grid
+                const travelGrid = document.getElementById('travelOptionsGrid');
+                travelGrid.innerHTML = '';
+                if(data.travelOptions && data.travelOptions.length > 0) {
+                    data.travelOptions.forEach(option => {
+                        const isTrain = option.mode.toLowerCase().includes('train') || option.mode.toLowerCase().includes('express') || option.mode.toLowerCase().includes('bharat');
+                        const icon = isTrain 
+                            ? `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21v-8m0 0V5a2 2 0 012-2h-4a2 2 0 00-2 2v8a2 2 0 002 2h4a2 2 0 002-2v-8m-6 4h4m-4 4h4"></path></svg>`
+                            : `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                        
+                        travelGrid.innerHTML += `
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition flex items-start gap-4">
+                                <div class="bg-gray-100 p-3 rounded-xl text-gray-700 flex-shrink-0">
+                                    ${icon}
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-gray-800 mb-1">${option.mode}</h4>
+                                    <p class="text-gray-600 text-sm leading-relaxed">${option.details}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                // Hotels Grid
+                const hotelsGrid = document.getElementById('hotelsGrid');
+                hotelsGrid.innerHTML = '';
+                if(data.hotels && data.hotels.length > 0) {
+                    data.hotels.forEach(hotel => {
+                        let badgeStyle = 'bg-gray-100 text-gray-800';
+                        if(hotel.budget.toLowerCase().includes('luxury')) badgeStyle = 'bg-amber-100 text-amber-800 border-amber-200';
+                        else if(hotel.budget.toLowerCase().includes('budget')) badgeStyle = 'bg-green-100 text-green-800 border-green-200';
+                        else badgeStyle = 'bg-blue-100 text-blue-800 border-blue-200';
+
+                        hotelsGrid.innerHTML += `
+                            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col h-full hover:-translate-y-1 hover:shadow-lg transition duration-300">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="bg-purple-50 text-purple-600 p-2.5 rounded-xl">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                    </div>
+                                    <span class="text-xs font-bold px-3 py-1 rounded-full border ${badgeStyle}">${hotel.budget}</span>
+                                </div>
+                                <h4 class="text-lg font-bold text-gray-800 mb-2">${hotel.name}</h4>
+                                <p class="text-gray-600 text-sm flex-grow leading-relaxed">${hotel.description}</p>
+                            </div>
+                        `;
+                    });
+                }
+
+                // Attractions Grid
+                const attractionsGrid = document.getElementById('attractionsGrid');
+                attractionsGrid.innerHTML = '';
+                if(data.attractions && data.attractions.length > 0) {
+                    data.attractions.forEach((spot, idx) => {
+                        attractionsGrid.innerHTML += `
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition relative group overflow-hidden">
+                                <div class="absolute right-0 top-0 w-16 h-16 bg-brand-50/50 rounded-bl-full -z-10 group-hover:scale-150 transition-transform duration-500"></div>
+                                <div class="flex items-center gap-4 mb-3">
+                                    <span class="flex items-center justify-center w-8 h-8 rounded-full bg-brand-100 text-brand-600 font-bold text-sm">
+                                        ${idx + 1}
+                                    </span>
+                                    <h4 class="text-lg font-bold text-gray-800">${spot.name}</h4>
+                                </div>
+                                <p class="text-gray-600 text-sm leading-relaxed pl-12">${spot.description}</p>
+                            </div>
+                        `;
+                    });
+                }
+
+                // Local Transport
+                document.getElementById('resLocalTransport').textContent = data.localTransport;
+            }
+        });
+    </script>
+</body>
+</html>
